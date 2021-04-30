@@ -1,5 +1,6 @@
 package com.rakib.productservice.services.service_impl;
 
+import com.rakib.productservice.entity.Product;
 import com.rakib.productservice.repository.ProductRepository;
 import com.rakib.productservice.services.ProductService;
 import com.rakib.productservice.services.dto.ProductDTO;
@@ -9,6 +10,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -37,10 +39,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Mono<ProductDTO> postProduct(Mono<ProductDTO> productDTO) {
+//        Product product = ProductMapper.productDtoToEntity(productDTO);
+//        return productRepository.insert(product).map(ProductMapper::productEntityToDto);
         return productDTO
                 .map(ProductMapper::productDtoToEntity)
                 .flatMap(productRepository::insert)
-                .map(ProductMapper::productEntityToDto);
+                .doOnNext(System.out::println)
+                .map(ProductMapper::productEntityToDto)
+                .doOnError(throwable -> System.out.println(throwable.getMessage()));
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.rakib.productservice.web_controller;
 import com.rakib.productservice.configuration.AppConstant;
 import com.rakib.productservice.services.ProductService;
 import com.rakib.productservice.services.dto.ProductDTO;
-import com.rakib.productservice.services.dto.ResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,29 +22,40 @@ public class ProductController {
     }
 
     @GetMapping
-    public Flux<ResponseEntity<Map<String, Object>>> getAllProducts(){
-        return ResponseDTO.sendResponseFlux(HttpStatus.OK,"All data retrieve.",productService.getAllProduct());
+    public Flux<ProductDTO> getAllProducts(){
+        return productService.getAllProduct();
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<Map<String, Object>>> getProductsByID(@PathVariable(value = "id") String id){
-        return ResponseDTO.sendResponseMono(HttpStatus.OK,"Data retrieve By ID.",productService.getProductByID(id));
+    public Mono<ResponseEntity> getProductsByID(@PathVariable(value = "id") String id){
+        return productService.getProductByID(id)
+                .map(productDTO -> ResponseEntity.ok().body(productDTO))
+                .cast(ResponseEntity.class)
+                .defaultIfEmpty(ResponseEntity.badRequest().body("Empty Data"));
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Map<String, Object>>> deleteProducts(@PathVariable(value = "id") String id){
-        return ResponseDTO.sendResponseMono(HttpStatus.OK,"Product deleted.", productService.deleteProduct(id));
+    public Mono<ResponseEntity> deleteProducts(@PathVariable(value = "id") String id){
+        return productService.deleteProduct(id)
+                .map(unused -> ResponseEntity.ok().body("Deleted"));
     }
 
     @PostMapping
-    public Mono<ResponseEntity<Map<String, Object>>> insertProducts(@RequestBody Mono<ProductDTO> productDTO){
-        return ResponseDTO.sendResponseMono(HttpStatus.OK,"Product inserted.",productService.postProduct(productDTO));
+    public Mono<ResponseEntity> insertProducts(@RequestBody Mono<ProductDTO> productDTO){
+        return productService.postProduct(productDTO)
+                .map(productDTO1 -> ResponseEntity.ok().body(productDTO1))
+                .cast(ResponseEntity.class)
+                .defaultIfEmpty(ResponseEntity.badRequest().body("Empty Data"));
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<Map<String, Object>>> updateProducts(@PathVariable(value = "id") String id,
+    public Mono<ResponseEntity> updateProducts(@PathVariable(value = "id") String id,
                                                                     @RequestBody Mono<ProductDTO> productDTO){
-        return ResponseDTO.sendResponseMono(HttpStatus.OK,"Product updated.",productService.updateProduct(productDTO, id));
+        return productService.updateProduct(productDTO, id)
+                .map(productDTO1 -> ResponseEntity.status(HttpStatus.OK).body(productDTO1))
+                .cast(ResponseEntity.class)
+                .defaultIfEmpty(ResponseEntity.badRequest().body("Empty Data"));
+
     }
 
 }
