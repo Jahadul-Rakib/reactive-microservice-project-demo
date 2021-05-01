@@ -1,7 +1,5 @@
 package com.rakib.userservice.service.service_impl;
 
-import com.rakib.userservice.entity.Transactions;
-import com.rakib.userservice.entity.UserInfo;
 import com.rakib.userservice.repository.TransactionsRepository;
 import com.rakib.userservice.repository.UserRepository;
 import com.rakib.userservice.service.TransactionsService;
@@ -11,8 +9,6 @@ import com.rakib.userservice.service.dto.TransactionStatus;
 import com.rakib.userservice.service.mapper.TransactionMapper;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
-
-import java.util.Objects;
 
 @Service
 public class TransactionsImpl implements TransactionsService {

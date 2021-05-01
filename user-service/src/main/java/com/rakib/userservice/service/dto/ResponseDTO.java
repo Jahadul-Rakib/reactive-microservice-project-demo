@@ -14,7 +14,7 @@ public class ResponseDTO {
         Map<String, Object> map = new HashMap<>();
         map.put("status", status.value());
         map.put("message", message);
-        map.put("data", data);
+        map.put("data", Mono.fromSupplier(() -> data));
         return Mono.just(ResponseEntity.ok().body(map));
     }
     public static Flux<ResponseEntity<Map<String, Object>>> sendResponseFlux(HttpStatus status, String message, Object data) {
