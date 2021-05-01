@@ -8,7 +8,6 @@ import com.rakib.userservice.service.dto.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -24,8 +23,12 @@ public class UserController {
     }
 
     @GetMapping
-    public Flux<UserDTO> getAllUser() {
-        return userService.getAllUser();
+    public Mono<ResponseEntity> getAllUser() {
+        return userService.getAllUser()
+                .collectList()
+                .map(userDTOS -> ResponseEntity.ok().body(userDTOS))
+                .cast(ResponseEntity.class)
+                .defaultIfEmpty(ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Do not create any data"));
     }
 
     @PostMapping
